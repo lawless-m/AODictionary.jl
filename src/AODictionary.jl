@@ -1,5 +1,12 @@
 module AODictionary
 
+"""
+I initially forked this from https://gist.github.com/bzinberg/fb3981dd2251fb25cdbcd4f90b8b9a72
+but that makes a gist, which doesn't really play nicely with Julia's packaging system
+https://gist.github.com/lawless-m/4812e1aef4b4782302c2866761f2f3e0
+So now it's here.
+"""
+
 export AODict
 
 """
@@ -29,12 +36,14 @@ Example:
 struct AODict{K, V} <: AbstractDict{K, V}
   dict::Dict{K, V}
   keys::Vector{K}
+  index::Dict{K, Int}
 end
 
 function AODict{K, V}(kvs) where {K, V}
   ks = collect(map(first, kvs))
   dict = Dict{K, V}(kvs)
-  return AODict{K, V}(dict, ks)
+  idx = Dict([k=>i for (i,k) in enumerate(ks)])
+  return AODict{K, V}(dict, ks, idx)
 end
 AODict{K, V}(kvs::Pair...) where {K, V} = AODict{K, V}(kvs)
 AODict(kvs::Pair{K, V}...) where {K, V} = AODict{K, V}(kvs)
