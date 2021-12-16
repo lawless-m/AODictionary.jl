@@ -7,7 +7,7 @@ https://gist.github.com/lawless-m/4812e1aef4b4782302c2866761f2f3e0
 So now it's here.
 """
 
-export AODict
+export AODict, getorset
 
 """
 Append-only dictionary that:
@@ -45,6 +45,7 @@ function AODict{K, V}(kvs) where {K, V}
   idx = Dict([k=>i for (i,k) in enumerate(ks)])
   return AODict{K, V}(dict, ks, idx)
 end
+
 AODict{K, V}(kvs::Pair...) where {K, V} = AODict{K, V}(kvs)
 AODict(kvs::Pair{K, V}...) where {K, V} = AODict{K, V}(kvs)
 AODict(kvs) = AODict{Any, Any}(kvs)
@@ -71,6 +72,7 @@ function Base.setindex!(d::AODict{K, V}, val::V, key::K) where {K, V}
   @assert key ∉ keys(d.dict)
   d.dict[key] = val
   push!(d.keys, key)
+  d.index[key] = length(d.keys)
   return val
 end
 
@@ -165,7 +167,7 @@ function getorset(aod::AODict, key, val)
   i = get(aod.index, key, 0)
   if i == 0
     aod[key] = val
-    i = aod.index[k]
+    i = aod.index[key]
   end
   i
 end
