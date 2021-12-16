@@ -7,7 +7,7 @@ https://gist.github.com/lawless-m/4812e1aef4b4782302c2866761f2f3e0
 So now it's here.
 """
 
-export AODict, getorset
+export AODict
 
 """
 Append-only dictionary that:
@@ -162,15 +162,6 @@ end
 
 Base.firstindex(seq::_SequentialAOODVals) = Base.firstindex(seq.d.keys)
 Base.lastindex(seq::_SequentialAOODVals) = Base.lastindex(seq.d.keys)
-
-function getorset(aod::AODict, key, val)
-  i = get(aod.index, key, 0)
-  if i == 0
-    aod[key] = val
-    i = aod.index[key]
-  end
-  i
-end
 
 ###
 end
