@@ -55,16 +55,19 @@ function Base.iterate(d::AODict)
   (k, state) = s
   return (k => d.dict[k], state)
 end
+
 function Base.iterate(d::AODict, state)
   s = Base.iterate(d.keys, state)
   if isnothing(s); return nothing; end
   (k, state) = s
   return (k => d.dict[k], state)
 end
+
 Base.length(d::AODict) = Base.length(d.keys)
 
 Base.getindex(d::AODict{K}, key::K) where K = d.dict[key]
-function Base.setindex!(d::AODict{K, V}, key::K, val::V) where {K, V}
+
+function Base.setindex!(d::AODict{K, V}, val::V, key::K) where {K, V}
   @assert key ∉ keys(d.dict)
   d.dict[key] = val
   push!(d.keys, key)
@@ -80,8 +83,8 @@ function Base.getproperty(d::AODict, prop::Symbol)
   end
   return Base.getfield(d, prop)
 end
-Base.propertynames(d::AODict) = [Base.fieldnames(d)...,
-                                                :seq, :seqvals]
+
+Base.propertynames(d::AODict) = [Base.fieldnames(d)..., :seq, :seqvals]
 
 """
 Read-only, array-like indexable accessor for the `(key, value)` pairs of an
@@ -157,6 +160,15 @@ end
 
 Base.firstindex(seq::_SequentialAOODVals) = Base.firstindex(seq.d.keys)
 Base.lastindex(seq::_SequentialAOODVals) = Base.lastindex(seq.d.keys)
+
+function getorset(aod::AODict, key, val)
+  i = get(aod.index, key, 0)
+  if i == 0
+    aod[key] = val
+    i = aod.index[k]
+  end
+  i
+end
 
 ###
 end
