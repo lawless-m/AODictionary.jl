@@ -88,6 +88,8 @@ end
 
 Base.propertynames(d::AODict) = [Base.fieldnames(d)..., :seq, :seqvals]
 
+Base.in(v, d::AODict) = v in d.keys
+
 """
 Read-only, array-like indexable accessor for the `(key, value)` pairs of an
 `AODict`.
